@@ -213,12 +213,12 @@ export class OracleLoan{
             let u128Amount: u128 = u128.fromBytes(Bytes.fromBytes(amount.toBytes()), true);
             let u128Deposit: u128 = u128.fromBytes(Bytes.fromBytes(deposit.toBytes()), true);
             let u128depositsPool: u128 = u128.fromBytes(Bytes.fromBytes(this.depositsPool.toBytes()), true);
-            let reward: u128 = u128.muldiv(u128Amount, u128Deposit, u128depositsPool);
+            let share: u128 = u128.muldiv(u128Amount, u128Deposit, u128depositsPool);
 
-            let share: Balance = Balance.fromBytes(Bytes.fromu128(u128.fromUint8ArrayBE(Bytes.fromu128(reward))));
+            let balanceShare: Balance = Balance.fromBytes(Bytes.fromu128(u128.fromUint8ArrayBE(Bytes.fromu128(share))));
 
-            this.deposits.set(this.depositors[i], deposit + share);
-            Host.emitEvent("feePaid", [this.depositors[i].toBytes(), Bytes.fromBytes(share.toBytes())]);
+            this.deposits.set(this.depositors[i], deposit + balanceShare);
+            Host.emitEvent("feePaid", [this.depositors[i].toBytes(), Bytes.fromBytes(balanceShare.toBytes())]);
         }
         this.depositsPool += amount;
 
