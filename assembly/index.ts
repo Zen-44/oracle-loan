@@ -128,6 +128,14 @@ export class OracleLoan{
         Host.emitEvent("withdraw", [to.toBytes(), Bytes.fromBytes(amount.toBytes())]);
     }
 
+    withdrawUntrackedBalance(): void{
+        util.assert(Context.caller() == this.committeePresident, "Only committee president can withdraw untracked balance");
+        util.assert(Context.contractBalance() > this.depositsPool, "No untracked balance to withdraw");
+        let amount: Balance = Context.contractBalance() - this.depositsPool;
+        Host.createTransferPromise(Context.caller(), amount);
+        Host.emitEvent("untrackedBalanceWithdrawn", [Bytes.fromBytes(amount.toBytes())]);
+    }
+
     @mutateState
     changeCommitteePresident(addr: Address): void{
         util.assert(Context.caller() == this.committeePresident, "Only committee president can change committee president");

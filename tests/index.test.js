@@ -239,6 +239,57 @@ it("can deposit and withdraw", async () => {
     expect(bal).toBe(49.5);
 });
 
+it("can withdraw untracked balance", async () => {
+    let {provider, contract} = await deployContract();
+    await provider.Chain.generateBlocks(1);
+
+    // deposit
+    await provider.Contract.call(
+        contract,
+        "deposit",
+        "100",
+        "9999",
+        []
+    );
+    await provider.Chain.generateBlocks(1);
+
+    // try to withdraw untracked balance
+    let withdrawCall = await provider.Contract.call(
+        contract,
+        "withdrawUntrackedBalance",
+        "0",
+        "9999",
+        []
+    );
+    await provider.Chain.generateBlocks(1);
+    let withdrawReceipt = await provider.Chain.receipt(withdrawCall);
+    expect(withdrawReceipt.success).toBe(false);
+
+    // send idna without using deposit method
+    let call = await provider.Contract.call(
+        contract,
+        "getFeeRate",
+        "5",
+        "9999",
+        []
+    );
+    await provider.Chain.generateBlocks(1);
+    let callReceipt = await provider.Chain.receipt(call);
+
+    // try to withdraw untracked balance again
+    let withdrawCall2 = await provider.Contract.call(
+        contract,
+        "withdrawUntrackedBalance",
+        "0",
+        "9999",
+        []
+    );
+    await provider.Chain.generateBlocks(1);
+    let withdrawReceipt2 = await provider.Chain.receipt(withdrawCall2);
+    expect(parseInt(withdrawReceipt2.events[0].args[0], 16)).toBe(5 * 1e18);
+    expect(withdrawReceipt2.success).toBe(true);
+});
+
 it("accepts valid oracle", async () => {
     let {provider, contract} = await deployContract();
     await provider.Chain.generateBlocks(1);
