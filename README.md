@@ -2,6 +2,9 @@
 
 This smart contract enables iDNA loans for running oracle votes on the Idena Blockchain.
 
+### Web UI
+https://github.com/Zen-44/oracle-loan-ui    
+
 ### Key Principles
 - anyone can deposit funds in the contract which are used to hand out loans
 - a fee is collected for every loan and the fees are distributed to all depositors according to their share of the fund pool
